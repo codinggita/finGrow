@@ -12,10 +12,12 @@ import {
   InvestingIcon 
 } from './assets/Icons';
 
+import { Link } from 'react-router-dom';
+
 const Home = () => {
   return (
     <div className="min-h-screen bg-background font-sans text-navy selection:bg-primary/30 relative">
-      {/* BACKGROUND BLOBS */}
+      
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-blob"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-400/5 rounded-full blur-[120px] animate-blob animation-delay-2000"></div>
@@ -71,10 +73,10 @@ const Home = () => {
                 The simple, stress-free way to manage your finances. No jargon, just results.
               </p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6">
-                <button className="group px-10 py-5 bg-primary text-white font-black rounded-2xl hover:bg-green-600 transition-all shadow-xl shadow-green-200 flex items-center justify-center transform hover:-translate-y-1">
+                <Link to="/login" className="group px-10 py-5 bg-primary text-white font-black rounded-2xl hover:bg-green-600 transition-all shadow-xl shadow-green-200 flex items-center justify-center transform hover:-translate-y-1">
                   Get Started
                   <svg className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                </button>
+                </Link>
                 <button className="px-10 py-5 bg-white border-2 border-gray-100 text-navy font-bold rounded-2xl hover:border-primary/50 hover:bg-gray-50 transition-all flex items-center justify-center shadow-sm">
                   Learn More
                 </button>
