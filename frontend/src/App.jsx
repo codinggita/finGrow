@@ -1,7 +1,9 @@
-export default function App() {
+import Home from './pages/Home'
+
+function App() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <h1 className="text-3xl font-bold">FinGrow Frontend Init</h1>
-    </div>
+    <Home />
   )
 }
+
+export default App
