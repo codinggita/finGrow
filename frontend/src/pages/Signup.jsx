@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleIcon, AppleIcon } from './assets/Icons';
 
-const Login = () => {
+const Signup = () => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   return (
     <div className="min-h-screen bg-background font-sans text-navy selection:bg-primary/30 relative flex items-center justify-center p-4 overflow-hidden">
@@ -25,16 +27,16 @@ const Login = () => {
           </span>
         </div>
 
-        {/* LOGIN CARD */}
+        {/* SIGNUP CARD */}
         <div className="bg-white/80 backdrop-blur-xl rounded-[40px] p-8 md:p-12 border border-gray-100 shadow-2xl shadow-primary/5">
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-black text-navy mb-3 tracking-tight">Welcome back</h1>
+            <h1 className="text-3xl font-black text-navy mb-3 tracking-tight">Create account</h1>
             <p className="text-gray-500 font-medium leading-relaxed">
-              Log in to manage your wealth and track your progress.
+              Join 50,000+ people building wealth with FinGrow.
             </p>
           </div>
 
-          {/* SOCIAL LOGIN */}
+          {/* SOCIAL SIGNUP */}
           <div className="grid grid-cols-2 gap-4 mb-8">
             <button className="flex items-center justify-center py-4 px-6 bg-white border border-gray-100 rounded-2xl hover:bg-gray-50 hover:shadow-sm transition-all group">
               <GoogleIcon />
@@ -51,12 +53,22 @@ const Login = () => {
               <div className="w-full border-t border-gray-100"></div>
             </div>
             <span className="relative px-4 bg-white text-gray-400 text-[10px] font-black uppercase tracking-widest">
-              or continue with email
+              or use your email
             </span>
           </div>
 
-          {/* LOGIN FORM */}
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
+          {/* SIGNUP FORM */}
+          <form onSubmit={(e) => e.preventDefault()} className="space-y-5">
+            <div>
+              <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Full Name</label>
+              <input 
+                type="text" 
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="John Doe"
+                className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-navy placeholder:text-gray-300"
+              />
+            </div>
             <div>
               <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Email Address</label>
               <input 
@@ -68,10 +80,7 @@ const Login = () => {
               />
             </div>
             <div>
-              <div className="flex justify-between items-center mb-2 ml-1">
-                <label className="block text-xs font-black uppercase tracking-widest text-gray-500">Password</label>
-                <a href="#" className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-green-600 transition-colors">Forgot?</a>
-              </div>
+              <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Password</label>
               <input 
                 type="password" 
                 value={password}
@@ -81,23 +90,25 @@ const Login = () => {
               />
             </div>
 
-            <div className="flex items-center ml-1">
+            <div className="flex items-start ml-1 pt-2">
               <input 
                 type="checkbox" 
-                id="remember"
-                className="w-5 h-5 rounded-lg border-gray-100 text-primary focus:ring-primary transition-all cursor-pointer"
+                id="terms"
+                className="mt-1 w-5 h-5 rounded-lg border-gray-100 text-primary focus:ring-primary transition-all cursor-pointer"
               />
-              <label htmlFor="remember" className="ml-3 text-sm font-bold text-gray-500 cursor-pointer select-none">Remember me for 30 days</label>
+              <label htmlFor="terms" className="ml-3 text-sm font-bold text-gray-500 cursor-pointer select-none leading-relaxed">
+                I agree to the <a href="#" className="text-primary hover:underline">Terms of Service</a> and <a href="#" className="text-primary hover:underline">Privacy Policy</a>.
+              </label>
             </div>
 
-            <button className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:bg-green-600 transition-all shadow-xl shadow-green-200 transform hover:-translate-y-1 active:scale-95">
-              Log In
+            <button className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:bg-green-600 transition-all shadow-xl shadow-green-200 transform hover:-translate-y-1 active:scale-95 mt-4">
+              Create My Account
             </button>
           </form>
 
           <div className="mt-10 text-center">
             <p className="text-sm font-bold text-gray-500">
-              Don't have an account? <Link to="/signup" className="text-primary hover:text-green-600 transition-colors ml-1">Sign up for free</Link>
+              Already have an account? <Link to="/login" className="text-primary hover:text-green-600 transition-colors ml-1">Log in</Link>
             </p>
           </div>
         </div>
@@ -115,4 +126,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Signup;
