@@ -4,59 +4,102 @@ import Layout from '../components/Layout';
 export default function Dashboard() {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [monthlySpending, setMonthlySpending] = useState(0);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [savings, setSavings] = useState(0);
   const [categoryTotals, setCategoryTotals] = useState({ housing: 0, food: 0, entertainment: 0, other: 0 });
 
   useEffect(() => {
     const saved = localStorage.getItem('fingrow_expenses');
+    let parsed = null;
+    
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        setRecentTransactions(parsed.slice(0, 4)); // Get top 4 recent
-        // Calculate total spending and categories
-        let total = 0;
-        let housing = 0;
-        let food = 0;
-        let entertainment = 0;
-        let other = 0;
-
-        parsed.forEach(curr => {
-          const num = parseFloat(curr.amount.replace(/[^0-9.]/g, ""));
-          const amt = isNaN(num) ? 0 : num;
-          total += amt;
-
-          const cat = curr.category ? curr.category.toLowerCase() : '';
-          if (cat.includes('housing')) {
-            housing += amt;
-          } else if (cat.includes('grocer') || cat.includes('food')) {
-            food += amt;
-          } else if (cat.includes('entertain')) {
-            entertainment += amt;
-          } else {
-            other += amt;
-          }
-        });
-
-        setMonthlySpending(total);
-        setCategoryTotals({ housing, food, entertainment, other });
+        parsed = JSON.parse(saved);
       } catch (e) {
         console.error("Error parsing expenses", e);
       }
     }
+
+    // Default mock data if no data exists in local storage or array is empty
+    if (!parsed || !Array.isArray(parsed) || parsed.length === 0) {
+      parsed = [
+        { id: 1, date: 'Oct 24, 2023', title: 'Whole Foods Market', subtitle: 'Weekly organic grocery run', category: 'Groceries', amount: '-$142.50', icon: 'cart', color: 'orange' },
+        { id: 2, date: 'Oct 22, 2023', title: 'Gas Station', subtitle: 'Fuel for the weekend trip', category: 'Transport', amount: '-$58.00', icon: 'car', color: 'blue' },
+        { id: 3, date: 'Oct 20, 2023', title: 'Netflix Subscription', subtitle: 'Monthly premium plan', category: 'Entertainment', amount: '-$19.99', icon: 'monitor', color: 'purple' },
+        { id: 4, date: 'Oct 19, 2023', title: 'Property Rent', subtitle: 'October rent payment', category: 'Housing', amount: '-$1,200.00', icon: 'home', color: 'green' },
+        { id: 5, date: 'Oct 15, 2023', title: 'TechCorp Inc.', subtitle: 'Monthly Salary', category: 'Income', amount: '+$4,200.00', icon: 'home', color: 'green' }
+      ];
+    }
+
+    // Safely get top 4 recent
+    setRecentTransactions(parsed.slice(0, 4));
+
+    let totalExp = 0;
+    let totalInc = 0;
+    let housing = 0;
+    let food = 0;
+    let entertainment = 0;
+    let other = 0;
+
+    parsed.forEach(curr => {
+      try {
+        const amtStr = curr.amount ? String(curr.amount) : "0";
+        // Extract numbers and negative sign
+        const num = parseFloat(amtStr.replace(/[^0-9.-]/g, ""));
+        const amt = isNaN(num) ? 0 : num;
+
+        if (amtStr.includes('-') || amt < 0) {
+          const absAmt = Math.abs(amt);
+          totalExp += absAmt;
+          
+          const cat = curr.category ? String(curr.category).toLowerCase() : '';
+          if (cat.includes('housing')) {
+            housing += absAmt;
+          } else if (cat.includes('grocer') || cat.includes('food')) {
+            food += absAmt;
+          } else if (cat.includes('entertain')) {
+            entertainment += absAmt;
+          } else {
+            other += absAmt;
+          }
+        } else {
+          totalInc += amt;
+        }
+      } catch (err) {
+        console.error("Error processing transaction", err);
+      }
+    });
+
+    setMonthlySpending(totalExp);
+    setCategoryTotals({ housing, food, entertainment, other });
+    
+    // Calculate dynamic totals based on mock starting balances
+    const baseBalance = 25000.00;
+    const baseSavings = 8500.00;
+    
+    setTotalBalance(baseBalance + totalInc - totalExp);
+    
+    // Estimate savings as base savings + some percentage of net positive income if any
+    const netIncome = totalInc - totalExp;
+    setSavings(baseSavings + (netIncome > 0 ? netIncome * 0.4 : netIncome * 0.1));
   }, []);
 
-  // Calculate percentages for donut
-  const totalCat = monthlySpending || 1; // avoid divide by zero
-  const p1 = Math.round((categoryTotals.housing / totalCat) * 100);
-  const p2 = Math.round((categoryTotals.food / totalCat) * 100);
-  const p3 = Math.round((categoryTotals.entertainment / totalCat) * 100);
-  const p4 = 100 - p1 - p2 - p3; // other
+  // Calculate percentages for donut chart safely
+  const totalCat = monthlySpending > 0 ? monthlySpending : 1; 
+  const p1 = monthlySpending > 0 ? Math.round((categoryTotals.housing / totalCat) * 100) : 0;
+  const p2 = monthlySpending > 0 ? Math.round((categoryTotals.food / totalCat) * 100) : 0;
+  const p3 = monthlySpending > 0 ? Math.round((categoryTotals.entertainment / totalCat) * 100) : 0;
+  const p4 = monthlySpending > 0 ? 100 - p1 - p2 - p3 : 100; 
 
   const offset2 = -p1;
   const offset3 = offset2 - p2;
   const offset4 = offset3 - p3;
 
   const formatCurrency = (num) => {
-    return '$' + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (isNaN(num) || num === null || num === undefined) return '$0.00';
+    const isNegative = num < 0;
+    const formattedNum = Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return isNegative ? `-$${formattedNum}` : `$${formattedNum}`;
   };
 
   return (
@@ -80,7 +123,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">$24,560.00</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{formatCurrency(totalBalance)}</div>
               <div className="text-[10px] font-semibold text-green-600 flex items-center gap-1">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="19" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
                 +2.4% from last month
@@ -97,7 +140,7 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900 mb-1">{monthlySpending > 0 ? formatCurrency(monthlySpending) : '$3,120.45'}</div>
+              <div className="text-2xl font-bold text-gray-900 mb-1">{formatCurrency(monthlySpending)}</div>
               <div className="text-[10px] font-semibold text-blue-500 flex items-center gap-1">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
                 12% under budget
@@ -114,9 +157,9 @@ export default function Dashboard() {
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-gray-900 mb-2">$8,900.00</div>
+              <div className="text-2xl font-bold text-gray-900 mb-2">{formatCurrency(savings)}</div>
               <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden mb-1">
-                <div className="bg-green-700 h-full rounded-full" style={{ width: '74%' }}></div>
+                <div className="bg-green-700 h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, (savings / 12000) * 100))}%` }}></div>
               </div>
               <div className="text-[9px] font-medium text-gray-400">Goal: $12,000 New Car</div>
             </div>
@@ -154,14 +197,20 @@ export default function Dashboard() {
               {/* CSS Donut Chart */}
               <div className="relative w-48 h-48 mb-8">
                 <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
-                  <circle strokeDasharray={`${p1}, 100`} stroke="#16a34a" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />
-                  <circle strokeDasharray={`${p2}, 100`} strokeDashoffset={offset2} stroke="#0284c7" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />
-                  <circle strokeDasharray={`${p3}, 100`} strokeDashoffset={offset3} stroke="#84cc16" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />
-                  <circle strokeDasharray={`${p4}, 100`} strokeDashoffset={offset4} stroke="#f97316" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />
+                  {monthlySpending > 0 ? (
+                    <>
+                      {p1 > 0 && <circle strokeDasharray={`${p1}, 100`} stroke="#16a34a" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />}
+                      {p2 > 0 && <circle strokeDasharray={`${p2}, 100`} strokeDashoffset={offset2} stroke="#0284c7" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />}
+                      {p3 > 0 && <circle strokeDasharray={`${p3}, 100`} strokeDashoffset={offset3} stroke="#84cc16" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />}
+                      {p4 > 0 && <circle strokeDasharray={`${p4}, 100`} strokeDashoffset={offset4} stroke="#f97316" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />}
+                    </>
+                  ) : (
+                    <circle stroke="#f3f4f6" strokeWidth="4" fill="none" r="16" cx="18" cy="18" />
+                  )}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-[10px] font-semibold text-gray-400">Total</span>
-                  <span className="text-lg font-bold text-gray-900">{monthlySpending > 0 ? formatCurrency(monthlySpending) : '$0'}</span>
+                  <span className="text-lg font-bold text-gray-900">{formatCurrency(monthlySpending)}</span>
                 </div>
               </div>
 
@@ -240,56 +289,22 @@ export default function Dashboard() {
                           {tx.category}
                         </span>
                       </td>
-                      <td className="py-4 whitespace-nowrap text-xs text-gray-500 font-medium">{tx.date.split(',')[0]}</td>
+                      <td className="py-4 whitespace-nowrap text-xs text-gray-500 font-medium">{tx.date?.split ? tx.date.split(',')[0] : tx.date}</td>
                       <td className="py-4 whitespace-nowrap text-sm font-bold text-red-600 text-right">{tx.amount}</td>
                     </tr>
                   )) : (
-                    <>
-                      <tr className="hover:bg-gray-50/50 transition-colors group">
-                        <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>
-                            </div>
-                            <div>
-                              <div className="font-bold text-sm text-gray-900">Starbucks Reserve</div>
-                              <div className="text-[11px] text-gray-400 font-medium">Coffee shop</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-blue-100 text-blue-800">FOOD</span>
-                        </td>
-                        <td className="py-4 whitespace-nowrap text-xs text-gray-500 font-medium">Oct 24, 2023</td>
-                        <td className="py-4 whitespace-nowrap text-sm font-bold text-red-600 text-right">-$14.50</td>
-                      </tr>
-
-                      <tr className="hover:bg-gray-50/50 transition-colors group">
-                        <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-green-50 text-green-600 flex items-center justify-center flex-shrink-0">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                            </div>
-                            <div>
-                              <div className="font-bold text-sm text-gray-900">TechCorp Inc.</div>
-                              <div className="text-[11px] text-gray-400 font-medium">Monthly Salary</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 whitespace-nowrap">
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black bg-green-200 text-green-800">INCOME</span>
-                        </td>
-                        <td className="py-4 whitespace-nowrap text-xs text-gray-500 font-medium">Oct 23, 2023</td>
-                        <td className="py-4 whitespace-nowrap text-sm font-bold text-green-700 text-right">+$4,200.00</td>
-                      </tr>
-                    </>
+                    <tr>
+                      <td colSpan="4" className="py-8 text-center text-gray-500 font-medium text-sm">
+                        No recent transactions to show.
+                      </td>
+                    </tr>
                   )}
                 </tbody>
               </table>
             </div>
-
+            
             <div className="pt-4 border-t border-gray-50 text-center mt-2">
-              <a href="#" className="text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors">View All Transactions</a>
+              <a href="/expenses" className="text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors">View All Transactions</a>
             </div>
           </div>
         </div>
@@ -337,9 +352,9 @@ export default function Dashboard() {
             </p>
             
             {/* Floating Add Button */}
-            <button className="absolute bottom-[-16px] right-8 w-14 h-14 bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-green-800 hover:scale-105 transition-all transform z-10 border-4 border-white">
+            <a href="/expenses" className="absolute bottom-[-16px] right-8 w-14 h-14 bg-green-700 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-green-800 hover:scale-105 transition-all transform z-10 border-4 border-white">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
-            </button>
+            </a>
           </div>
 
         </div>
