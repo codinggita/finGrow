@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import api from '../services/api';
 
 const SidebarItem = ({ icon, text, active, to }) => {
   return (
@@ -15,13 +16,10 @@ export default function Layout({ children }) {
   const [profile, setProfile] = useState({ fullName: 'Alex Rivers', email: 'Premium Member', profilePicture: 'https://i.pravatar.cc/150?img=11' });
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/profile', {
-      headers: { 'Authorization': 'Bearer mock_token' }
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data && data.fullName) {
-          setProfile(data);
+    api.get('/profile')
+      .then(response => {
+        if (response.data && response.data.fullName) {
+          setProfile(response.data);
         }
       })
       .catch(err => console.error('Error fetching profile for layout:', err));
