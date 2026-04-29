@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const SidebarItem = ({ icon, text, active, to }) => {
@@ -12,6 +12,20 @@ const SidebarItem = ({ icon, text, active, to }) => {
 
 export default function Layout({ children }) {
   const location = useLocation();
+  const [profile, setProfile] = useState({ fullName: 'Alex Rivers', email: 'Premium Member', profilePicture: 'https://i.pravatar.cc/150?img=11' });
+
+  useEffect(() => {
+    fetch('http://localhost:5000/api/profile', {
+      headers: { 'Authorization': 'Bearer mock_token' }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.fullName) {
+          setProfile(data);
+        }
+      })
+      .catch(err => console.error('Error fetching profile for layout:', err));
+  }, []);
 
   return (
     <div className="flex h-screen bg-background overflow-hidden font-sans">
@@ -61,10 +75,16 @@ export default function Layout({ children }) {
 
         <div className="p-4 mb-4">
           <div className="bg-white rounded-2xl p-4 flex items-center gap-3 border border-gray-100 shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-            <img className="h-10 w-10 rounded-full object-cover border border-gray-200" src="https://i.pravatar.cc/150?img=11" alt="Alex Rivers" />
+            {profile.profilePicture ? (
+              <img className="h-10 w-10 rounded-full object-cover border border-gray-200" src={profile.profilePicture} alt={profile.fullName} />
+            ) : (
+              <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-bold border border-gray-300">
+                {profile.fullName.charAt(0)}
+              </div>
+            )}
             <div className="flex flex-col">
-              <span className="text-sm font-bold text-navy">Alex Rivers</span>
-              <span className="text-[10px] text-gray-500 font-medium">Premium Member</span>
+              <span className="text-sm font-bold text-navy truncate w-32">{profile.fullName}</span>
+              <span className="text-[10px] text-gray-500 font-medium truncate w-32">{profile.email}</span>
             </div>
           </div>
         </div>

@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [totalBalance, setTotalBalance] = useState(0);
   const [savings, setSavings] = useState(0);
   const [categoryTotals, setCategoryTotals] = useState({ housing: 0, food: 0, entertainment: 0, other: 0 });
+  const [profile, setProfile] = useState(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('fingrow_expenses');
@@ -73,15 +74,33 @@ export default function Dashboard() {
     setMonthlySpending(totalExp);
     setCategoryTotals({ housing, food, entertainment, other });
     
-    // Calculate dynamic totals based on mock starting balances
-    const baseBalance = 25000.00;
-    const baseSavings = 8500.00;
-    
-    setTotalBalance(baseBalance + totalInc - totalExp);
-    
-    // Estimate savings as base savings + some percentage of net positive income if any
-    const netIncome = totalInc - totalExp;
-    setSavings(baseSavings + (netIncome > 0 ? netIncome * 0.4 : netIncome * 0.1));
+    // Calculate dynamic totals based on profile
+    fetch('http://localhost:5000/api/profile', {
+      headers: { 'Authorization': 'Bearer mock_token' }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.fullName) {
+          setProfile(data);
+          setTotalBalance(data.monthlyIncome + totalInc - totalExp);
+          setSavings(data.savings);
+        } else {
+          // Fallback
+          const baseBalance = 25000.00;
+          const baseSavings = 8500.00;
+          setTotalBalance(baseBalance + totalInc - totalExp);
+          const netIncome = totalInc - totalExp;
+          setSavings(baseSavings + (netIncome > 0 ? netIncome * 0.4 : netIncome * 0.1));
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching profile for dashboard:', err);
+        const baseBalance = 25000.00;
+        const baseSavings = 8500.00;
+        setTotalBalance(baseBalance + totalInc - totalExp);
+        const netIncome = totalInc - totalExp;
+        setSavings(baseSavings + (netIncome > 0 ? netIncome * 0.4 : netIncome * 0.1));
+      });
   }, []);
 
   // Calculate percentages for donut chart safely
@@ -108,7 +127,7 @@ export default function Dashboard() {
         
         {/* Header */}
         <div className="mb-2">
-          <h2 className="text-3xl font-bold text-gray-900 mb-1 tracking-tight">Good Morning, Alex</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-1 tracking-tight">Good Morning{profile && profile.fullName ? `, ${profile.fullName.split(' ')[0]}` : ''}</h2>
           <p className="text-gray-500 text-sm">Here's what's happening with your money today.</p>
         </div>
 
