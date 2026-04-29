@@ -2,11 +2,11 @@
   "name": "fingrow-backend",
   "version": "1.0.0",
   "description": "Backend services for FinGrow Expense Tracker",
-  "main": "src/index.js",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

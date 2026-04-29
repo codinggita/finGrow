@@ -1,0 +1,22 @@
+[
+  {
+    "userId": "user_001",
+    "fullName": "Sarah Jenkins",
+    "email": "sarah.j@example.com",
+    "profilePicture": "base64_string_here",
+    "monthlyIncome": 120000,
+    "savings": 350000,
+    "riskAppetite": "High",
+    "investmentGoals": ["Early Retirement", "Wealth Growth", "Buy a Home"]
+  },
+  {
+    "userId": "user_002",
+    "fullName": "David Chen",
+    "email": "david.chen@example.com",
+    "profilePicture": "",
+    "monthlyIncome": 60000,
+    "savings": 20000,
+    "riskAppetite": "Low",
+    "investmentGoals": ["Emergency Fund", "Short-term Savings"]
+  }
+]
