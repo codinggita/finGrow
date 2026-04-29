@@ -13,10 +13,15 @@ import {
 } from './assets/Icons';
 
 import { Link } from 'react-router-dom';
+import SEO from '../components/SEO';
 
 const Home = () => {
   return (
     <div className="min-h-screen bg-background font-sans text-navy selection:bg-primary/30 relative">
+      <SEO 
+        title="Personal Finance & Investing" 
+        description="FinGrow is the simple, stress-free way to manage your finances, track expenses, and start investing confidently." 
+      />
       
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-blob"></div>

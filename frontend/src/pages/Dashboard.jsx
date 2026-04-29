@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import SEO from '../components/SEO';
 
 export default function Dashboard() {
   const [recentTransactions, setRecentTransactions] = useState([]);
@@ -123,6 +124,10 @@ export default function Dashboard() {
 
   return (
     <Layout>
+      <SEO 
+        title="Dashboard" 
+        description="View your financial overview, track spending habits, and monitor your investment growth on FinGrow." 
+      />
       <div className="flex flex-col gap-6 max-w-6xl mx-auto pb-10">
         
         {/* Header */}
