@@ -32,8 +32,15 @@ Overall, FinGrow is designed to reduce friction, enhance understanding, and empo
 - 📊 Expense tracking and categorization  
 - 📈 Interactive dashboard with financial insights  
 - 💼 Beginner-friendly investment guidance  
-- 🔐 Secure and structured data handling  
-- 🎯 Clean, responsive, and minimal user interface  
+- 🔐 Secure authentication and session management
+- 📱 Fully responsive UI/UX using Tailwind CSS and MUI
+- ⚡ React Redux Toolkit for centralized state management
+- 🛠️ Formik and Yup for robust form validation
+- 🌑 Dark/Light mode theme system
+- 🔔 Real-time notifications via React Toastify
+- 📂 File upload with Drag & Drop functionality
+- 🚀 Optimized performance with React Lazy Loading and Suspense
+- 🔍 SEO ready with React Helmet Async
 
 ---
 
@@ -48,8 +55,13 @@ https://www.figma.com/design/0DOsKlgOM9gjZfjJigScIo/Untitled?node-id=1-7&t=3O79V
 ## 🛠️ Tech Stack  
 
 **Frontend**  
-- ⚛️ React.js  
-- 🎨 Tailwind CSS  
+- ⚛️ React.js (Vite)
+- 🎨 Tailwind CSS + Material UI (MUI)
+- 📦 Redux Toolkit (State Management)
+- 🛣️ React Router DOM (Routing)
+- 📝 Formik & Yup (Forms)
+- 📡 Axios (API Integration)
+- 🔔 React Toastify (Notifications)
 
 **Backend**  
 - 🟢 Node.js  
@@ -58,6 +70,54 @@ https://www.figma.com/design/0DOsKlgOM9gjZfjJigScIo/Untitled?node-id=1-7&t=3O79V
 **Database**  
 - 🍃 MongoDB  
 
-**Tools**  
-- 🧩 Figma  
-- 🔧 Git and GitHub  
+---
+
+## 📂 Folder Structure
+The application follows a highly scalable, feature-based architecture.
+
+```text
+frontend/src/
+├── app/            # Redux store configuration
+├── assets/         # Static assets (images, icons)
+├── components/     # Reusable UI components
+├── features/       # Redux slices grouped by feature (auth, user, ui)
+├── hooks/          # Custom React hooks (useAuth, useDebounce, useAnalytics)
+├── pages/          # Main application views/pages
+├── services/       # Centralized API service with Axios interceptors
+├── utils/          # Utility functions (localStorage/sessionStorage helpers)
+├── App.jsx         # Main application component with Routing setup
+└── main.jsx        # React application entry point with Providers
+```
+
+---
+
+## 🚀 Project Setup
+Follow these steps to run the project locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone <repository_url>
+   cd finGrow/frontend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Set up Environment Variables:**
+   Create a `.env` file in the frontend root and add:
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+   ```
+
+4. **Run the Development Server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Build for Production:**
+   ```bash
+   npm run build
+   ```

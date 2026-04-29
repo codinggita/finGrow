@@ -1,0 +1,26 @@
+[
+  {
+    "userId": "user_123",
+    "monthlyIncome": 85000,
+    "monthlyExpenses": 35000,
+    "currentSavings": 120000,
+    "riskAppetite": "High",
+    "investmentDuration": "Long-term"
+  },
+  {
+    "userId": "user_456",
+    "monthlyIncome": 40000,
+    "monthlyExpenses": 38000,
+    "currentSavings": 15000,
+    "riskAppetite": "Medium",
+    "investmentDuration": "Short-term"
+  },
+  {
+    "userId": "user_789",
+    "monthlyIncome": 120000,
+    "monthlyExpenses": 50000,
+    "currentSavings": 400000,
+    "riskAppetite": "Low",
+    "investmentDuration": "Long-term"
+  }
+]
