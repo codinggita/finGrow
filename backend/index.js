@@ -3,10 +3,15 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
+import connectDB from './src/config/db.js';
 import investmentRoutes from './src/routes/investmentRoutes.js';
 import profileRoutes from './src/routes/profileRoutes.js';
 
 dotenv.config();
+
+// Connect to MongoDB
+connectDB();
+
 const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
