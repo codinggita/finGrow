@@ -1,19 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Formik, Form, Field } from 'formik';
+import * as Yup from 'yup';
+import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { loginStart, loginSuccess } from '../features/auth/authSlice';
 import { GoogleIcon, AppleIcon } from './assets/Icons';
+import SEO from '../components/SEO';
+
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email('Invalid email').required('Required'),
+  password: Yup.string().min(6, 'Too Short!').required('Required'),
+});
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  const handleLogin = (e) => {
-    e.preventDefault();
-    navigate('/dashboard');
-  };
+  const dispatch = useDispatch();
 
   return (
     <div className="min-h-screen bg-background font-sans text-navy selection:bg-primary/30 relative flex items-center justify-center p-4 overflow-hidden">
+      <SEO 
+        title="Log In" 
+        description="Log in to your FinGrow account to manage your wealth and track your financial progress." 
+      />
       {/* BACKGROUND BLOBS */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-blob"></div>
@@ -62,44 +71,70 @@ const Login = () => {
           </div>      
 
           {/* LOGIN FORM */}
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Email Address</label>
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
-                className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-navy placeholder:text-gray-300"
-              />
-            </div>
-            <div>  
-              <div className="flex justify-between items-center mb-2 ml-1">
-                <label className="block text-xs font-black uppercase tracking-widest text-gray-500">Password</label>
-                <a href="#" className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-green-600 transition-colors">Forgot?</a>
-              </div>     
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-6 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-navy placeholder:text-gray-300"
-              />
-            </div>
+          <Formik
+            initialValues={{ email: '', password: '', remember: false }}
+            validationSchema={LoginSchema}
+            onSubmit={(values, { setSubmitting }) => {
+              dispatch(loginStart());
+              // Simulate API Call
+              setTimeout(() => {
+                dispatch(loginSuccess({ token: 'dummy-token-12345' }));
+                toast.success('Successfully logged in!');
+                setSubmitting(false);
+                navigate('/dashboard');
+              }, 1000);
+            }}
+          >
+            {({ errors, touched, isSubmitting }) => (
+              <Form className="space-y-6">
+                <div>
+                  <label className="block text-xs font-black uppercase tracking-widest text-gray-500 mb-2 ml-1">Email Address</label>
+                  <Field 
+                    type="email" 
+                    name="email"
+                    placeholder="name@example.com"
+                    className={`w-full px-6 py-4 bg-gray-50 border ${errors.email && touched.email ? 'border-red-500' : 'border-gray-100'} rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-navy placeholder:text-gray-300`}
+                  />
+                  {errors.email && touched.email ? (
+                    <div className="text-red-500 text-xs mt-1 ml-1 font-bold">{errors.email}</div>
+                  ) : null}
+                </div>
+                <div>  
+                  <div className="flex justify-between items-center mb-2 ml-1">
+                    <label className="block text-xs font-black uppercase tracking-widest text-gray-500">Password</label>
+                    <a href="#" className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-green-600 transition-colors">Forgot?</a>
+                  </div>     
+                  <Field 
+                    type="password" 
+                    name="password"
+                    placeholder="••••••••"
+                    className={`w-full px-6 py-4 bg-gray-50 border ${errors.password && touched.password ? 'border-red-500' : 'border-gray-100'} rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-navy placeholder:text-gray-300`}
+                  />
+                  {errors.password && touched.password ? (
+                    <div className="text-red-500 text-xs mt-1 ml-1 font-bold">{errors.password}</div>
+                  ) : null}
+                </div>
 
-            <div className="flex items-center ml-1">
-              <input 
-                type="checkbox" 
-                id="remember"
-                className="w-5 h-5 rounded-lg border-gray-100 text-primary focus:ring-primary transition-all cursor-pointer"
-              />
-              <label htmlFor="remember" className="ml-3 text-sm font-bold text-gray-500 cursor-pointer select-none">Remember me for 30 days</label>
-            </div>
+                <div className="flex items-center ml-1">
+                  <Field 
+                    type="checkbox" 
+                    name="remember"
+                    id="remember"
+                    className="w-5 h-5 rounded-lg border-gray-100 text-primary focus:ring-primary transition-all cursor-pointer"
+                  />
+                  <label htmlFor="remember" className="ml-3 text-sm font-bold text-gray-500 cursor-pointer select-none">Remember me for 30 days</label>
+                </div>
 
-            <button className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:bg-green-600 transition-all shadow-xl shadow-green-200 transform hover:-translate-y-1 active:scale-95">
-              Log In
-            </button>
-          </form>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="w-full py-5 bg-primary text-white font-black rounded-2xl hover:bg-green-600 transition-all shadow-xl shadow-green-200 transform hover:-translate-y-1 active:scale-95 disabled:opacity-70 disabled:hover:translate-y-0"
+                >
+                  {isSubmitting ? 'Logging in...' : 'Log In'}
+                </button>
+              </Form>
+            )}
+          </Formik>
 
           <div className="mt-10 text-center">
             <p className="text-sm font-bold text-gray-500">

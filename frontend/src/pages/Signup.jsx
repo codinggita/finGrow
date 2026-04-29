@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleIcon, AppleIcon } from './assets/Icons';
+import SEO from '../components/SEO';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -10,6 +11,10 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-background font-sans text-navy selection:bg-primary/30 relative flex items-center justify-center p-4 overflow-hidden">
+      <SEO 
+        title="Sign Up" 
+        description="Create your free FinGrow account today and take control of your financial future." 
+      />
       {/* BACKGROUND BLOBS */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[120px] animate-blob"></div>
