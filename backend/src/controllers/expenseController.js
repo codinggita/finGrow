@@ -34,12 +34,15 @@ export const addExpense = async (req, res) => {
 
     const categoryExpenses = await Expense.find({
       userId: req.user.id,
-      category,
+      category: { $regex: new RegExp(`^${category}$`, 'i') },
       date: { $gte: startOfMonth }
     });
     
     const totalSpent = categoryExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-    const budget = await Budget.findOne({ userId: req.user.id, category });
+    const budget = await Budget.findOne({ 
+      userId: req.user.id, 
+      category: { $regex: new RegExp(`^${category}$`, 'i') } 
+    });
 
     if (budget && totalSpent > budget.limit) {
       await createNotification(

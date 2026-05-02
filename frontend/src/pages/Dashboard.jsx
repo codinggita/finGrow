@@ -30,14 +30,21 @@ export default function Dashboard() {
       let entertainment = 0;
       let other = 0;
 
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+
       expenses.forEach(curr => {
+        const d = new Date(curr.date);
+        if (d.getMonth() !== currentMonth || d.getFullYear() !== currentYear) return;
+
         const amt = parseFloat(curr.amount) || 0;
         totalExp += amt;
         
         const cat = curr.category ? String(curr.category).toLowerCase() : '';
         if (cat.includes('housing')) {
           housing += amt;
-        } else if (cat.includes('grocer') || cat.includes('food')) {
+        } else if (cat.includes('food')) {
           food += amt;
         } else if (cat.includes('entertain')) {
           entertainment += amt;

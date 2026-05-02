@@ -45,9 +45,9 @@ export default function Expenses() {
 
     try {
       const payload = {
-        title: category === 'other' ? customCategory : category.charAt(0).toUpperCase() + category.slice(1),
+        title: category === 'Other' ? customCategory : category,
         amount: parseFloat(amount),
-        category: category === 'other' ? customCategory : category,
+        category: category === 'Other' ? customCategory : category,
         date,
         description: notes,
         frequency
@@ -71,7 +71,15 @@ export default function Expenses() {
 
   // Calculate budget stats dynamically
   const BUDGET_LIMIT = 20000;
-  const totalSpent = expenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  
+  const totalSpent = expenses
+    .filter(exp => {
+      const d = new Date(exp.date);
+      return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
+    })
+    .reduce((acc, curr) => acc + (curr.amount || 0), 0);
 
   const remaining = BUDGET_LIMIT - totalSpent;
   const progressPercentage = Math.min((totalSpent / BUDGET_LIMIT) * 100, 100);
@@ -176,15 +184,18 @@ export default function Expenses() {
                     className="block w-full px-4 py-2.5 bg-gray-50 border-transparent rounded-xl text-gray-900 focus:ring-2 focus:ring-primary focus:bg-white transition-colors appearance-none relative outline-none cursor-pointer"
                   >
                     <option value="" disabled>Select category</option>
-                    <option value="groceries">Groceries</option>
-                    <option value="transport">Transport</option>
-                    <option value="entertainment">Entertainment</option>
-                    <option value="housing">Housing</option>
-                    <option value="other">Other</option>
+                    <option value="Food">Food</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="Housing">Housing</option>
+                    <option value="Shopping">Shopping</option>
+                    <option value="Health">Health</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Other">Other</option>
                   </select>
                 </div>
 
-                {category === 'other' && (
+                {category === 'Other' && (
                   <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5">Custom Category Name</label>
                     <input 

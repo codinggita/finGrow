@@ -10,10 +10,11 @@ export const getBudgets = async (req, res) => {
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
 
-    const updatedBudgets = await Promise.all(budgets.map(async (budget) => {
+    const updatedBudgets = await Promise.all(budgets.map(async (budgetDoc) => {
+      const budget = budgetDoc.toObject();
       const expenses = await Expense.find({
         userId: req.user.id,
-        category: budget.category,
+        category: { $regex: new RegExp(`^${budget.category}$`, 'i') },
         date: { $gte: startOfMonth }
       });
       const spent = expenses.reduce((sum, exp) => sum + exp.amount, 0);
