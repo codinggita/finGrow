@@ -124,11 +124,6 @@ frontend/src/
 
 ---
 
-## 🖼️ Project Screenshots
-
-*(Add screenshots here — dashboard, expense page, insights, etc.)*
-
----
 
 ## 🚀 Project Setup
 
