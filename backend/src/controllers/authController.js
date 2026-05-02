@@ -1,5 +1,6 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { processRecurringExpenses } from './recurringController.js';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET || 'fallback_secret', { expiresIn: '30d' });
@@ -37,6 +38,9 @@ export const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (user && (await user.matchPassword(password))) {
+      // Process recurring expenses in background
+      processRecurringExpenses(user._id).catch(err => console.error('Recurring process error:', err));
+      
       res.json({
         _id: user._id,
         name: user.name,
@@ -55,6 +59,9 @@ export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (user) {
+      // Process recurring expenses in background
+      processRecurringExpenses(user._id).catch(err => console.error('Recurring process error:', err));
+      
       res.json(user);
     } else {
       res.status(404).json({ message: 'User not found' });
