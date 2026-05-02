@@ -1,9 +1,10 @@
 import mongoose from 'mongoose';
 import UserProfile from '../models/UserProfile.js';
+import { createNotification } from './notificationController.js';
 
 // In-memory mock DB in case MongoDB is not connected
 let mockProfile = {
-    userId: 'mock_user_123',
+    userId: '507f1f77bcf86cd799439011',
     fullName: 'Alex Developer',
     email: 'alex@example.com',
     profilePicture: '',
@@ -85,6 +86,14 @@ export const updateProfile = async (req, res) => {
         if (investmentGoals) profile.investmentGoals = investmentGoals;
 
         await profile.save();
+
+        // Create notification
+        await createNotification(
+            req.user.id,
+            'Your profile information has been updated successfully.',
+            'success'
+        );
+
         res.status(200).json(profile);
     } catch (error) {
         console.error('Error updating profile:', error);

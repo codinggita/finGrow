@@ -8,7 +8,7 @@ export const protect = (req, res, next) => {
 
     // For testing/mocking without a real login flow right now
     if (!token || token === 'mock_token') {
-        req.user = { id: 'mock_user_123', name: 'Alex Developer', email: 'alex@example.com' };
+        req.user = { id: '507f1f77bcf86cd799439011', name: 'Alex Developer', email: 'alex@example.com' };
         return next();
     }
 

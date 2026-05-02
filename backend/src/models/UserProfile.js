@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const userProfileSchema = new mongoose.Schema({
-    userId: { type: String, required: true, unique: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
     fullName: { type: String, required: true },
     email: { type: String, required: true },
     profilePicture: { type: String, default: '' }, // We will store Base64 string for simplicity without Cloudinary

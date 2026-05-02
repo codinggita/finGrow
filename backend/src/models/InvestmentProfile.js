@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const investmentProfileSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     monthlyIncome: { type: Number, required: true },
     monthlyExpenses: { type: Number, required: true },
     currentSavings: { type: Number, required: true },

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
+import api from '../services/api';
 
 export default function Investments() {
   const [formData, setFormData] = useState({
@@ -37,19 +38,10 @@ export default function Investments() {
     setError('');
     setRecommendation(null);
     try {
-      const response = await fetch('http://localhost:5000/api/investments/recommend', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setRecommendation(data);
-      } else {
-        setError(data.error || 'Failed to fetch recommendation');
-      }
+      const response = await api.post('/investments/recommend', formData);
+      setRecommendation(response.data);
     } catch (err) {
-      setError('Could not connect to the recommendation server. Please ensure the backend is running.');
+      setError(err.response?.data?.error || 'Could not connect to the recommendation server. Please ensure the backend is running.');
     } finally {
       setLoading(false);
     }

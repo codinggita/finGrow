@@ -1,4 +1,6 @@
 import { calculateInvestmentRecommendation, fetchRealTimeData } from '../services/investmentService.js';
+import InvestmentProfile from '../models/InvestmentProfile.js';
+import { createNotification } from './notificationController.js';
 
 export const getInvestmentRecommendations = async (req, res) => {
     try {
@@ -29,6 +31,27 @@ export const getInvestmentRecommendations = async (req, res) => {
                 const marketInfo = marketData[assetObj.asset] || {};
                 return { ...assetObj, ...marketInfo };
             });
+        }
+
+        // Save to Database if user is authenticated
+        if (req.user && req.user.id) {
+            const investmentProfile = new InvestmentProfile({
+                userId: req.user.id,
+                monthlyIncome: userData.monthlyIncome,
+                monthlyExpenses: userData.monthlyExpenses,
+                currentSavings: userData.currentSavings,
+                riskAppetite: userData.riskAppetite,
+                investmentDuration: userData.investmentDuration,
+                recommendation: recommendationResult.recommendation
+            });
+            await investmentProfile.save();
+
+            // Create notification
+            await createNotification(
+                req.user.id,
+                'New investment recommendation generated based on your profile.',
+                'info'
+            );
         }
 
         return res.status(200).json(recommendationResult);
