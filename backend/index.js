@@ -12,6 +12,8 @@ import notificationRoutes from './src/routes/notificationRoutes.js';
 import budgetRoutes from './src/routes/budgetRoutes.js';
 import analyticsRoutes from './src/routes/analyticsRoutes.js';
 import recurringRoutes from './src/routes/recurringRoutes.js';
+import goalRoutes from './src/routes/goalRoutes.js';
+import assetRoutes from './src/routes/assetRoutes.js';
 
 dotenv.config();
 
@@ -36,6 +38,8 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/recurring', recurringRoutes);
+app.use('/api/goals', goalRoutes);
+app.use('/api/assets', assetRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

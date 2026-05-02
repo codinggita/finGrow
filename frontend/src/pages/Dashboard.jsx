@@ -101,7 +101,7 @@ export default function Dashboard() {
         
         {/* Header */}
         <div className="mb-2">
-          <h2 className="text-3xl font-bold text-gray-900 mb-1 tracking-tight">Good Morning{profile && profile.fullName ? `, ${profile.fullName.split(' ')[0]}` : ''}</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-1 tracking-tight">Heyy!!{profile && profile.fullName ? ` ${profile.fullName.split(' ')[0]}` : ''}</h2>
           <p className="text-gray-500 text-sm">Here's what's happening with your money today.</p>
         </div>
 

@@ -15,6 +15,8 @@ const Investments = lazy(() => import('./pages/Investments'));
 const Insights = lazy(() => import('./pages/Insights'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Budgets = lazy(() => import('./pages/Budgets'));
+const Goals = lazy(() => import('./pages/Goals'));
+const Calendar = lazy(() => import('./pages/Calendar'));
 
 // Loading Fallback Component
 const PageLoader = () => (
@@ -40,6 +42,8 @@ const AppRoutes = () => {
         <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/budgets" element={<ProtectedRoute><Budgets /></ProtectedRoute>} />
+        <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
+        <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
       </Routes>
     </Suspense>
   );
