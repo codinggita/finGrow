@@ -53,9 +53,20 @@ export default function Expenses() {
         frequency
       };
 
+      // 1. Add the current instance as a normal expense
       const response = await api.post('/expenses', payload);
       setExpenses([response.data, ...expenses]);
-      toast.success('Expense added successfully');
+
+      // 2. If it's a recurring expense, create the rule in the backend
+      if (frequency !== 'one-time') {
+        await api.post('/recurring', {
+          ...payload,
+          startDate: date
+        });
+        toast.success(`Set up ${frequency} recurring expense`);
+      } else {
+        toast.success('Expense added successfully');
+      }
 
       // Reset Form
       setAmount('');
@@ -119,6 +130,22 @@ export default function Expenses() {
     return 0;
   });
 
+  const handleExport = async () => {
+    try {
+      const response = await api.get('/expenses/export', { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'fingrow_expenses.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      toast.success('Exporting data...');
+    } catch (err) {
+      toast.error('Failed to export data');
+    }
+  };
+
   if (loading) {
     return (
       <Layout>
@@ -138,7 +165,10 @@ export default function Expenses() {
             <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Expenses</h2>
             <p className="text-gray-500 mt-1">Track your spending and manage your budget effortlessly.</p>
           </div>
-          <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors shadow-sm font-medium text-sm">
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors shadow-sm font-medium text-sm"
+          >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
             Export
           </button>
